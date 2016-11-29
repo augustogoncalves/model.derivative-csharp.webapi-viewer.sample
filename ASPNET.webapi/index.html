@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>C# WebAPI Sample with Forge BUckets</title>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <!-- Common packages: jQuery, Bootstrap, jsTree -->
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="Scripts/jquery-3.1.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script src="Scripts/jsTree3/jstree.min.js"></script>
+    <link href="Content/jsTree/themes/default/style.min.css" rel="stylesheet" />
+    <!-- Autodesk Forge Viewer files -->
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/viewingservice/v1/viewers/style.min.css" type="text/css">
+    <script language="JavaScript" src="https://developer.api.autodesk.com/viewingservice/v1/viewers/three.min.js"></script>
+    <script language="JavaScript" src="https://developer.api.autodesk.com/viewingservice/v1/viewers/viewer3D.min.js"></script>
+    <!-- this project files -->
+    <link href="Content/main.css" rel="stylesheet" />
+    <script src="Scripts/ForgeTree.js"></script>
+    <script src="Scripts/ForgeViewer.js"></script>
+</head>
+<body>
+    <!-- Fixed navbar by Bootstrap: https://getbootstrap.com/examples/navbar-fixed-top/ -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav left">
+                <li>
+                    <a href="http://developer.autodesk.com" target="_blank">
+                        <img alt="Autodesk Forge" src="/Images/autodesk-forge.png" height="20">
+                        Autodesk Forge
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- End of navbar -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading" data-toggle="tooltip">
+                        Buckets &amp; Objects
+                        <img src="/Images/refresh.png" id="refreshBuckets" style="vertical-align: top; cursor: pointer" title="Refresh Buckets &amp; Objects" height="20" />
+                    </div>
+                    <div id="appBuckets" class="foldertree">
+                        tree here
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div id="forgeViewer" class="forgeViewer"></div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div style="float:right;"><img src="/Images/github-logo.png" height="20" /> <a href="https://github.com/Developer-Autodesk/">Source code</a></div>
+    </footer>
+</body>
+</html>
