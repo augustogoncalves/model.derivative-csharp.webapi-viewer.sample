@@ -70,7 +70,7 @@ function onItemLoadFail(errorCode) {
 function getAccessToken() {
     var token = '';
     jQuery.ajax({
-        url: '/api/forge/token',
+        url: '/api/forge/oauth/token',
         success: function (res) {
             token = res;
         },

@@ -25,6 +25,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.IO;
+
+using BucketKey = System.String;
 
 namespace Autodesk.Forge.OSS
 {
@@ -121,9 +124,7 @@ namespace Autodesk.Forge.OSS
       headers.AddHeader(PredefinedHeadersExtension.PredefinedHeaders.ContentTypeJson);
       headers.Add("x-ads-region", Enum.GetName(typeof(Region), region));
 
-      Dictionary<string, string> body = new Dictionary<string, string>();
-      body.Add("bucketKey", bucketKey);
-      body.Add("policyKey", Enum.GetName(typeof(PolicyKey), policyKey));
+      var body = new { bucketKey = bucketKey, policyKey = Enum.GetName(typeof(PolicyKey), policyKey).ToLower() };
 
       IRestResponse res = await REST.MakeAuthorizedRequestAsync(Authorization, END_POINTS.POST_BUCKETS, Method.POST, headers, null, body);
 
@@ -136,6 +137,23 @@ namespace Autodesk.Forge.OSS
       return newBucket;
     }
   }
+
+  
+  //public struct BucketKey
+  //{
+  //  public BucketKey(string bucketKey)
+  //  {
+  //    Value = bucketKey;
+  //  }
+
+  //  public string Value { get; internal set; }
+
+  //  public override string ToString()
+  //  {
+  //    return Value;
+  //  }
+  //}
+  
 
   public class Bucket : Internal.ApiObject
   {
@@ -150,6 +168,7 @@ namespace Autodesk.Forge.OSS
       return r.IsMatch(bucketKey);
     }
 
+    [JsonConstructor]
     internal Bucket() : base(null) { }
     protected Bucket(OAuth.OAuth oauth) : base(oauth) { }
 
@@ -158,13 +177,13 @@ namespace Autodesk.Forge.OSS
     /// </summary>
     /// <param name="oauth"></param>
     /// <param name="bucketKey"></param>
-    public Bucket(OAuth.OAuth oauth, string bucketKey) : base(oauth)
+    public Bucket(OAuth.OAuth oauth, BucketKey bucketKey) : base(oauth)
     {
-      BucketKey = bucketKey;
+      this.BucketKey = bucketKey;
     }
 
     [JsonProperty("bucketKey")]
-    public string BucketKey { get; internal set; }
+    public BucketKey BucketKey { get; set; }
 
     /// <summary>
     /// Timestamp in epoch time
@@ -229,6 +248,20 @@ namespace Autodesk.Forge.OSS
         obj.Authorization = Authorization;
 
       return _listOfObjects;
+    }
+
+    /// <summary>
+    /// Upload the provided filePath to the current bucket, creating a new object
+    /// </summary>
+    /// <param name="filePath">File to upload</param>
+    /// <returns>The new Object created</returns>
+    public async Task<Object> UploadObjectAsync(string filePath)
+    {
+      IRestResponse res =await REST.MakeAuthorizedRequestAsync(Authorization, string.Format(END_POINTS.PUT_BUCKET_OBJECT, BucketKey, Path.GetFileName(filePath)), Method.PUT, null, null, null, filePath);
+      if (res.StatusCode != System.Net.HttpStatusCode.OK)
+        throw new Exception(string.Format("Endpoint {0} at Buckets.GetObjectsAsync returned {1}", Internal.END_POINTS.PUT_BUCKET_OBJECT , res.StatusCode));
+
+      return JsonConvert.DeserializeObject<Object>(res.Content);
     }
   }
 

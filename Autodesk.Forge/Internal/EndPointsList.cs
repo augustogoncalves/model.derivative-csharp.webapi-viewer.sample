@@ -46,5 +46,13 @@ namespace Autodesk.Forge.Internal
     /// /oss/v2/buckets/:bucketKey/objects
     /// </summary>
     public const string GET_BUCKET_OBJECTS =  "/oss/v2/buckets/{0}/objects";
+
+    /// <summary>
+    /// Endpoint to upload an object (file).
+    /// /oss/v2/buckets/:bucketKey/objects/:objectName
+    /// </summary>
+    public const string PUT_BUCKET_OBJECT = "oss/v2/buckets/{0}/objects/{1}";
+
+    public const string POST_JOB = "/modelderivative/v2/designdata/job";
   }
 }

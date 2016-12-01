@@ -83,9 +83,13 @@ namespace Autodesk.Forge.Internal
     public enum PredefinedHeaders
     {
       /// <summary>
-      /// Content-Type: application/vnd.api+json
+      /// Content-Type: application/json
       /// </summary>
       ContentTypeJson,
+      /// <summary>
+      /// Content-Type: application/vnd.api+json
+      /// </summary>
+      ContentTypeVndApiJson,
       /// <summary>
       /// Content-Type: application/x-www-form-urlencoded
       /// </summary>
@@ -102,6 +106,9 @@ namespace Autodesk.Forge.Internal
       switch (header)
       {
         case PredefinedHeaders.ContentTypeJson:
+          obj.Add("Content-Type", "application/json");
+          break;
+        case PredefinedHeaders.ContentTypeVndApiJson:
           obj.Add("Content-Type", "application/vnd.api+json");
           break;
         case PredefinedHeaders.AcceptJson:

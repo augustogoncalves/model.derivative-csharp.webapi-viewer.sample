@@ -44,7 +44,7 @@ namespace WebAPISample.Controllers
 
     [HttpGet]
     [Route("api/forge/tree")]
-    public async Task<IList<TreeNode>> GetTreeDataAsync(string id)
+    public async Task<IList<TreeNode>> GetTreeDataAsync([FromUri]string id)
     {
       IList<TreeNode> nodes = new List<TreeNode>();
 
@@ -53,14 +53,14 @@ namespace WebAPISample.Controllers
       {
         // in this case, let's return all buckets
         AppBuckets appBuckets = new AppBuckets(oauth);
-       IEnumerable<Bucket> buckets = await appBuckets.GetBucketsAsync(int.MaxValue);
-        foreach(Bucket b in buckets)
+        IEnumerable<Bucket> buckets = await appBuckets.GetBucketsAsync(int.MaxValue);
+        foreach (Bucket b in buckets)
           nodes.Add(new TreeNode(b.BucketKey, b.BucketKey, "bucket", true));
       }
       else
       {
         // as we have the id (bucketKey), let's return all objects
-        Bucket bucket = new Bucket(oauth, id/*bucketKey*/);
+        Bucket bucket = new Bucket(oauth,  id/*bucketKey*/);
         IEnumerable<Autodesk.Forge.OSS.Object> objects = await bucket.GetObjectsAsync(int.MaxValue);
         foreach (Autodesk.Forge.OSS.Object obj in objects)
           nodes.Add(new TreeNode(obj.ObjectIdBase64, obj.ObjectKey, "object", false));

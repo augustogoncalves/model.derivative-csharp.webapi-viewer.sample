@@ -17,13 +17,29 @@
 /////////////////////////////////////////////////////////////////////
 
 $(document).ready(function () {
-    prepareDataManagementTree();
+    prepareAppBucketTree();
     $('#refreshBuckets').click(function () {
         $('#appBuckets').jstree(true).refresh();
     });
+
+    $('#createNewBucket').click(function () {
+        createNewBucket();
+    });
 });
 
-function prepareDataManagementTree() {
+function createNewBucket() {
+    var bucketKey = $('#newBucketKey').val();
+    var policyKey = $('#newBucketPolicyKey').val();
+    jQuery.post({
+        url: '/api/forge/buckets/createBucket',
+        data: { 'bucketKey': bucketKey, 'policyKey': policyKey },
+        success: function (res) {
+            $('#appBuckets').jstree(true).refresh();
+        },
+    });
+}
+
+function prepareAppBucketTree() {
     $('#appBuckets').jstree({
         'core': {
             'themes': { "icons": true },
@@ -50,13 +66,101 @@ function prepareDataManagementTree() {
                 'icon': 'glyphicon glyphicon-file'
             }
         },
-        "plugins": ["types", "state", "sort", "contextmenu"]//,
-        //contextmenu: { items: autodeskCustomMenu }
+        "plugins": ["types", "state", "sort", "contextmenu"],
+        contextmenu: { items: autodeskCustomMenu }
     }).on('loaded.jstree', function () {
         $('#appBuckets').jstree('open_all');
     }).bind("activate_node.jstree", function (evt, data) {
         if (data != null && data.node != null) {
             launchViewer(data.node.id);
         }
+    });
+}
+
+function autodeskCustomMenu(autodeskNode) {
+    var items;
+
+    switch (autodeskNode.type){
+        case "bucket":
+            items = {
+                sendToBox: {
+                    label: "Upload file",
+                    icon: "/Images/upload.png",
+                    action: function () {
+                        var treeNode = $('#appBuckets').jstree(true).get_selected(true)[0];
+                        uploadFile(treeNode);
+                    }
+                }
+            };
+            break;
+        case "object":
+            items = {
+                sendToBox: {
+                    label: "Translate",
+                    icon: "/Images/icon-model-derive.svg",
+                    action: function () {
+                        var treeNode = $('#appBuckets').jstree(true).get_selected(true)[0];
+                        translateObject(treeNode);
+                    }
+                }
+            };
+            break;
+    }
+
+    return items;
+}
+
+function uploadFile(node) {
+    $('#hiddenUploadField').click();
+    $('#hiddenUploadField').change(function () {
+        var file = this.files[0];
+        //size = file.size;
+        //type = file.type;
+        switch (node.type) {
+            // case 'projects' // ToDo
+            case 'bucket':
+                var formData = new FormData();
+                formData.append('fileToUpload', file);
+                formData.append('bucketKey', node.id);
+
+                $.ajax({
+                    url: '/api/forge/buckets/uploadObject',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    type: 'POST',
+                    success: function (data) {
+                        $('#appBuckets').jstree(true).refresh_node(node);
+                    }
+                });
+
+                /*
+                 // upload with progress bar ToDo
+                 var xhr = new XMLHttpRequest();
+                 xhr.open('post', '/api/upload', true);
+                 xhr.upload.onprogress = function (e) {
+                 if (e.lengthComputable) {
+                 //var percentage = (e.loaded / e.total) * 100;
+                 //$('div.progress div.bar').css('width', percentage + '%');
+                 }
+                 };
+                 xhr.onload = function () {
+                 }
+                 xhr.send(formData);
+                 */
+                break;
+        }
+    });
+}
+
+function translateObject(node) {
+    var bucketKey = node.parents[0];
+    var objectKey = node.id;
+    jQuery.post({
+        url: '/api/forge/modelderivative/translateObject',
+        data: { 'bucketKey': bucketKey, 'objectKey': objectKey },
+        success: function (res) {
+            $('#appBuckets').jstree(true).refresh();
+        },
     });
 }

@@ -17,14 +17,37 @@
 /////////////////////////////////////////////////////////////////////
 
 using Autodesk.Forge.Internal;
+using Autodesk.Forge.ModelDerivative;
 using Newtonsoft.Json;
+using System.Net;
+using System.Threading.Tasks;
+
+using BucketKey = System.String;
+using ObjectId = System.String;
 
 namespace Autodesk.Forge.OSS
 {
   public class Object : ApiObject
   {
+    [JsonConstructor]
     internal Object() : base(null) { }
-    internal Object(OAuth.OAuth auth) : base(auth) { }
+
+    /// <summary>
+    /// Instantiate a skeleton object, consider using BucketDetails.InitializeAsync before accessing any property.
+    /// </summary>
+    /// <param name="auth"></param>
+    /// <param name="objectKey"></param>
+    public Object(OAuth.OAuth auth, BucketKey bucketKey, ObjectId objectId64) : base(auth)
+    {
+      BucketKey = bucketKey;
+      ObjectIdBase64 = objectId64; 
+    }
+
+    public async Task<HttpStatusCode> Translate(SVFOutput[] svfOutput)
+    {
+      PostSVFJobModel postJob = new ModelDerivative.PostSVFJobModel(ObjectIdBase64, new SVFOutput[] { SVFOutput.Views2d, SVFOutput.Views3d });
+      return await Job.PostJob(Authorization, postJob);
+    }
 
     /// <summary>
     /// Bucket Key where this object resides
@@ -50,6 +73,10 @@ namespace Autodesk.Forge.OSS
     [JsonProperty("objectIdBase64")]
     public string ObjectIdBase64
     {
+      set
+      {
+        ObjectId = value.Base64Decode();
+      }
       get
       {
         return ObjectId.Base64Encode();

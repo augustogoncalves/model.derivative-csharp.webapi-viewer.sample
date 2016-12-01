@@ -21,14 +21,12 @@ using Autodesk.Forge.OAuth;
 using System.Collections.Generic;
 using System.Web.Http;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Web;
+using System.IO;
 
 namespace WebAPISample.Controllers
 {
-  // ********
-  // This controller is not yet used on this project, just to demonstrate some features.
-  // ********
-
-
   public class BucketsController : ApiController
   {
     private async Task<OAuth> GetOAuth(Scope[] scope)
@@ -38,6 +36,65 @@ namespace WebAPISample.Controllers
         (scope == null ? Config.FORGE_SCOPE_PUBLIC : scope));
       return oauth;
     }
+
+    /// <summary>
+    /// Data model for CreateBucket end point
+    /// </summary>
+    public class CreateBucketModel
+    {
+      public string bucketKey { get; set; }
+      public PolicyKey policyKey { get; set; }
+      public Region region { get; set; }
+    }
+
+    [HttpPost]
+    [Route("api/forge/buckets/createBucket")]
+    public async Task<BucketDetails> CreateBucket([FromBody]CreateBucketModel bucket)
+    {
+      if (!Bucket.IsValidBucketKey(bucket.bucketKey)) return null;
+
+      AppBuckets buckets = new AppBuckets(await GetOAuth(new Scope[] { Scope.BucketCreate }));
+      return await buckets.CreateBucketAsync(bucket.bucketKey, bucket.policyKey, bucket.region);
+    }
+
+    public class UploadObjectModel
+    {
+      public string bucketKey { get; set; }
+      public HttpPostedFileBase fileToUpload { get; set; }
+    }
+
+    [HttpPost]
+    [Route("api/forge/buckets/uploadObject")]
+    public async Task<Object> UploadObject()//[FromBody]UploadObjectModel obj)
+    { 
+      // basic input validation
+      HttpRequest req = HttpContext.Current.Request;
+      if (string.IsNullOrWhiteSpace(req.Params["bucketKey"]))
+        throw new System.Exception("BucketKey parameter was not provided.");
+
+      if (req.Files.Count != 1)
+        throw new System.Exception("Missing file to upload"); // for now, let's support just 1 file at a time
+
+      string bucketKey = req.Params["bucketKey"];
+      HttpPostedFile file = req.Files[0];
+
+      // save the file on the server
+      var fileSavePath = Path.Combine(HttpContext.Current.Server.MapPath("~/UploadedFiles"), file.FileName);
+      file.SaveAs(fileSavePath);
+
+      // get the bucket...
+      Bucket bucket = new Bucket(await GetOAuth(new Scope[] { Scope.DataCreate, Scope.DataWrite }), bucketKey);
+      // upload the file/object, which will create a new object
+      Object newObj = await bucket.UploadObjectAsync(fileSavePath);
+
+      // cleanup
+      File.Delete(fileSavePath);
+
+      return newObj;
+    }
+
+
+    #region Demonstration endpoints, not used on this sample
 
     [HttpGet]
     [Route("api/forge/buckets")]
@@ -65,5 +122,8 @@ namespace WebAPISample.Controllers
       Bucket bucket = new Bucket(oauth, bucketKey);
       return await bucket.GetObjectsAsync(limit, startAt);
     }
+
+    #endregion
+
   }
 }

@@ -26,6 +26,8 @@ namespace Autodesk.Forge.OAuth
   public enum Scope
   {
     DataRead,
+    DataCreate,
+    DataWrite,
     BucketRead,
     BucketCreate
 
@@ -66,7 +68,21 @@ namespace Autodesk.Forge.OAuth
       }
     }
 
+    private string _accessToken;
+
     [JsonProperty("access_token")]
-    public string AccessToken { get; set; }
+    public string AccessToken
+    {
+      get
+      {
+        if (_expiresAt < DateTime.Now)
+          throw new Exception("Token expired.");
+        return _accessToken;
+      }
+      set
+      {
+        _accessToken = value;
+      }
+    }
   }
 }

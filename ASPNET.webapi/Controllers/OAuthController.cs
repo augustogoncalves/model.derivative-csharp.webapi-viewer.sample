@@ -25,7 +25,7 @@ namespace WebAPISample.Controllers
   public class OAuthController : ApiController
   {
     [HttpGet]
-    [Route("api/forge/token")]
+    [Route("api/forge/oauth/token")]
     public async Task<string> Get()
     {
       OAuth oauth = await OAuth2LeggedToken.AuthenticateAsync(
