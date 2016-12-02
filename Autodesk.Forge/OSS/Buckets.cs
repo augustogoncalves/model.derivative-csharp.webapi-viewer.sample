@@ -171,7 +171,7 @@ namespace Autodesk.Forge.OSS
     /// <returns></returns>
     public static bool IsValidBucketKey(string bucketKey)
     {
-      Regex r = new Regex(@"^[a-z0-9\-]+$", RegexOptions.IgnorePatternWhitespace);
+      Regex r = new Regex(@"^[a-z0-9\-_]+$", RegexOptions.IgnorePatternWhitespace);
       return r.IsMatch(bucketKey);
     }
 

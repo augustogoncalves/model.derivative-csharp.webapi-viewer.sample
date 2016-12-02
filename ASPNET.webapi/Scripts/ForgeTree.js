@@ -76,7 +76,7 @@ function prepareAppBucketTree() {
     }).on('loaded.jstree', function () {
         $('#appBuckets').jstree('open_all');
     }).bind("activate_node.jstree", function (evt, data) {
-        if (data != null && data.node != null) {
+        if (data != null && data.node != null && data.node.type=='object') {
             launchViewer(data.node.id);
         }
     });
