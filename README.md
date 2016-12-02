@@ -18,15 +18,15 @@ This basic C# WebAPI back-end sample implements a basic list of Buckets and Obje
 
  The Visual Studio solution includes 3 projects: 
 
-**1. Forge**: Class Library (.DLL) that wraps some of OAuth, OSS and Model Derivative endpoints in a meanifull way.
+**1. ASPNET.Webapi**: WebAPI backend that expose specific endpoints to the fron-end (pude HTML + JavaScript) via Controllers.
 
-**2. ASPNET.Webapi**: WebAPI backend that expose specific endpoints to the fron-end (pude HTML + JavaScript) via Controllers.
+**2. Autodesk.Forge**: Class Library (.DLL) that wraps some of OAuth, OSS and Model Derivative endpoints in a meanifull way.
 
-**3. Test**: Some testing methods.
+**3. Autodesk.Forge.Test**: Some testing methods.
 
 # Setup
 
-For using this sample, you need an Autodesk developer credentials. Visit the [Forge Developer Portal](https://developer.autodesk.com), sign up for an account, then [create an app](https://developer.autodesk.com/myapps/create). For this new app, use **http://localhost:3000/api/forge/callback/oauth** as Callback URL, although is not used on 2-legged flow. Finally take note of the **Client ID** and **Client Secret**.
+For using this sample, you need an Autodesk developer credentials. Visit the [Forge Developer Portal](https://developer.autodesk.com), sign up for an account, then [create an app](https://developer.autodesk.com/myapps/create) that uses Data Management and Model Derivative APIs. For this new app, use **http://localhost:3000/api/forge/callback/oauth** as Callback URL, although is not used on 2-legged flow. Finally take note of the **Client ID** and **Client Secret**.
 
 ## Run Locally
 
@@ -48,9 +48,7 @@ Start the **ASPNET.webapi** project, the **index.html** is marked as start page.
 Open the **ForgeApp.runsettings** file and adjust the Forge client ID and secret.
 
 ```xml
-    <?xml version="1.0" encoding="utf-8"?>
     <RunSettings>
-      <!-- Parameters used by tests at runtime -->
       <TestRunParameters>
         <Parameter name="FORGE_CLIENT_ID" value="" />
         <Parameter name="FORGE_CLIENT_SECRET" value="" />
@@ -66,7 +64,7 @@ This solution includes a **Autodesk.Forge** class library that maps endpoints re
 
 ```cs
       // authenticate
-      OAuth.OAuth oauth = await OAuth2LeggedToken.AuthenticateAsync(ForgeClientID, ForgeClientSecret,
+      OAuth.OAuth oauth = await OAuth2LeggedToken.AuthenticateAsync("Your client ID", "Your client secret",
         new Scope[] { Scope.BucketRead, Scope.BucketCreate, Scope.DataRead, Scope.DataCreate, Scope.DataWrite });
 
       // create bucket and get list of buckets in different conditions
@@ -94,6 +92,10 @@ This solution includes a **Autodesk.Forge** class library that maps endpoints re
       HttpStatusCode res = await newObject.Translate(new SVFOutput[] { SVFOutput.Views3d, SVFOutput.Views2d });
       // now this newObject is ready for Viewer
 ```
+
+# Know issues
+
+The **ASPNET.webapi** project is adding reference to Newtonsoft.Json library due a dependency from another library (jsTree), but this is not required and cause a conflict of versions. If it happens, you can safely remove this reference (from ASPNET.webapi project).
 
 # License
 
