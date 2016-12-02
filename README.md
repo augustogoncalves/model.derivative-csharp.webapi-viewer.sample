@@ -33,10 +33,10 @@ For using this sample, you need an Autodesk developer credentials. Visit the [Fo
 Open the **web.config** file and adjust the Forge Client ID & Secret.
 
 ```xml
-    <appSettings>
-      <add key="FORGE_CLIENT_ID" value="" />
-      <add key="FORGE_CLIENT_SECRET" value="" />
-    </appSettings>
+<appSettings>
+  <add key="FORGE_CLIENT_ID" value="" />
+  <add key="FORGE_CLIENT_SECRET" value="" />
+</appSettings>
 ```
 
 Compile the solution, Visual Studio should download the NUGET packages ([RestSharp](https://www.nuget.org/packages/RestSharp) and [Newtonsoft.Json](https://www.nuget.org/packages/newtonsoft.json/))
@@ -48,12 +48,12 @@ Start the **ASPNET.webapi** project, the **index.html** is marked as start page.
 Open the **ForgeApp.runsettings** file and adjust the Forge client ID and secret.
 
 ```xml
-    <RunSettings>
-      <TestRunParameters>
-        <Parameter name="FORGE_CLIENT_ID" value="" />
-        <Parameter name="FORGE_CLIENT_SECRET" value="" />
-      </TestRunParameters>
-    </RunSettings>
+<RunSettings>
+  <TestRunParameters>
+    <Parameter name="FORGE_CLIENT_ID" value="" />
+    <Parameter name="FORGE_CLIENT_SECRET" value="" />
+  </TestRunParameters>
+</RunSettings>
 ```
 
 The **BucketWorkflow** test will create a bucket (named "test[timestamp]"), upload the testing file (/TestFile/Analyze.dwf) and post a translation job.
@@ -63,34 +63,34 @@ The **BucketWorkflow** test will create a bucket (named "test[timestamp]"), uplo
 This solution includes a **Autodesk.Forge** class library that maps endpoints related to app buckets. 
 
 ```cs
-      // authenticate
-      OAuth.OAuth oauth = await OAuth2LeggedToken.AuthenticateAsync("Your client ID", "Your client secret",
-        new Scope[] { Scope.BucketRead, Scope.BucketCreate, Scope.DataRead, Scope.DataCreate, Scope.DataWrite });
+// authenticate
+OAuth.OAuth oauth = await OAuth2LeggedToken.AuthenticateAsync("Your client ID", "Your client secret",
+new Scope[] { Scope.BucketRead, Scope.BucketCreate, Scope.DataRead, Scope.DataCreate, Scope.DataWrite });
 
-      // create bucket and get list of buckets in different conditions
-      AppBuckets app = new AppBuckets(oauth);
-      IEnumerable<Bucket> buckets = await buckets.GetBucketsAsync(10);
+// create bucket and get list of buckets in different conditions
+AppBuckets app = new AppBuckets(oauth);
+IEnumerable<Bucket> buckets = await buckets.GetBucketsAsync(10);
 
-      // create a random bucket
-      string bucketKey = string.Format("test{0}", DateTime.Now.ToString("yyyyMMddHHmmss"));
-      Bucket bucket = await app.CreateBucketAsync(bucketKey, PolicyKey.Transient);
+// create a random bucket
+string bucketKey = string.Format("test{0}", DateTime.Now.ToString("yyyyMMddHHmmss"));
+Bucket bucket = await app.CreateBucketAsync(bucketKey, PolicyKey.Transient);
 
-      // upload new object
-      OSS.Object newObject = await bucket.UploadObjectAsync(testFile);
-      // this URN can be used on the viewer
-      // but need to translate first...
-      string newObjectURN = newObject.ObjectIdBase64;
+// upload new object
+OSS.Object newObject = await bucket.UploadObjectAsync(testFile);
+// this URN can be used on the viewer
+// but need to translate first...
+string newObjectURN = newObject.ObjectId.Base64Encode();
 
-      // the list after should have 1 object...
-      IEnumerable<OSS.Object> objectsAfter = await bucket.GetObjectsAsync(int.MaxValue);
-      foreach (OSS.Object obj in objectsAfter)
-      {
-        string urn = obj.ObjectId;
-      }
+// the list after should have 1 object...
+IEnumerable<OSS.Object> objectsAfter = await bucket.GetObjectsAsync(int.MaxValue);
+foreach (OSS.Object obj in objectsAfter)
+{
+    string urn = obj.ObjectId;
+}
 
-      // translate
-      HttpStatusCode res = await newObject.Translate(new SVFOutput[] { SVFOutput.Views3d, SVFOutput.Views2d });
-      // now this newObject is ready for Viewer
+// translate
+HttpStatusCode res = await newObject.Translate(new SVFOutput[] { SVFOutput.Views3d, SVFOutput.Views2d });
+// now this newObject is ready for Viewer
 ```
 
 # Know issues
