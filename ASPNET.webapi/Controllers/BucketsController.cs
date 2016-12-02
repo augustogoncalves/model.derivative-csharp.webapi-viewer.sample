@@ -79,7 +79,7 @@ namespace WebAPISample.Controllers
       HttpPostedFile file = req.Files[0];
 
       // save the file on the server
-      var fileSavePath = Path.Combine(HttpContext.Current.Server.MapPath("~/UploadedFiles"), file.FileName);
+      var fileSavePath = Path.Combine(HttpContext.Current.Server.MapPath("~/App_Data"), file.FileName);
       file.SaveAs(fileSavePath);
 
       // get the bucket...
