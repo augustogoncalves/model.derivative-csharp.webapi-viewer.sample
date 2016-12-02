@@ -25,6 +25,10 @@ $(document).ready(function () {
     $('#createNewBucket').click(function () {
         createNewBucket();
     });
+
+    $('#createBucketModal').on('shown.bs.modal', function () {
+        $("#newBucketKey").focus();
+    })
 });
 
 function createNewBucket() {
@@ -35,6 +39,7 @@ function createNewBucket() {
         data: { 'bucketKey': bucketKey, 'policyKey': policyKey },
         success: function (res) {
             $('#appBuckets').jstree(true).refresh();
+            $('#createBucketModal').modal('toggle');
         },
     });
 }
@@ -160,7 +165,7 @@ function translateObject(node) {
         url: '/api/forge/modelderivative/translateObject',
         data: { 'bucketKey': bucketKey, 'objectKey': objectKey },
         success: function (res) {
-            $('#appBuckets').jstree(true).refresh();
+            //$('#appBuckets').jstree(true).refresh();
         },
     });
 }

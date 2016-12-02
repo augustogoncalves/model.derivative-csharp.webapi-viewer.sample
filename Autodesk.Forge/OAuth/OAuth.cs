@@ -51,12 +51,19 @@ namespace Autodesk.Forge.OAuth
     }
 
     [JsonProperty("token_type")]
-    public string TokenType { get; set; }
+    public string TokenType { get; internal set; }
 
     private DateTime _expiresAt;
+    public DateTime ExpiresAt
+    {
+      get
+      {
+        return _expiresAt;
+      }
+    }
 
     [JsonProperty("expires_in")]
-    public long ExpiresIn
+    private long ExpiresIn
     {
       get
       {
@@ -67,7 +74,7 @@ namespace Autodesk.Forge.OAuth
         _expiresAt = DateTime.Now.AddSeconds(value);
       }
     }
-
+    
     private string _accessToken;
 
     [JsonProperty("access_token")]
@@ -79,7 +86,7 @@ namespace Autodesk.Forge.OAuth
           throw new Exception("Token expired.");
         return _accessToken;
       }
-      set
+      internal set
       {
         _accessToken = value;
       }

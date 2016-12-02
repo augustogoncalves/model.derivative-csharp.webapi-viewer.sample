@@ -93,12 +93,12 @@ namespace Autodesk.Forge.OSS
     /// Object size (in Bytes)
     /// </summary>
     [JsonProperty("size")]
-    public int Size { get; internal set; }
+    public long Size { get; internal set; }
 
     /// <summary>
     /// URL to download the object. A data:read scope is required to download the file. This property does not download the file, just return the URL.
     /// </summary>
-    [JsonProperty("localization")]
-    public string Localization { get; internal set; }
+    [JsonProperty("location")]
+    public string Location { get; internal set; }
   }
 }

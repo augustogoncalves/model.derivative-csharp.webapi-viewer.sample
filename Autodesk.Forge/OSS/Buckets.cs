@@ -48,7 +48,7 @@ namespace Autodesk.Forge.OSS
   {
     public AppBuckets(OAuth.OAuth oauth) : base(oauth)
     {
-      
+
     }
 
     private class BucketsResponse
@@ -73,10 +73,10 @@ namespace Autodesk.Forge.OSS
       while (limit > 0)
       {
         Dictionary<string, string> parameters = new Dictionary<string, string>();
-        parameters.Add("limit", (limit>100 ? 100 : limit).ToString());
+        parameters.Add("limit", (limit > 100 ? 100 : limit).ToString());
         parameters.Add("region", Enum.GetName(typeof(Region), region));
         if (!string.IsNullOrEmpty(startAt)) parameters.Add("startAt", startAt);
-        
+
         IRestResponse res = await REST.MakeAuthorizedRequestAsync(Authorization, Internal.END_POINTS.GET_BUCKETS, RestSharp.Method.GET, null, parameters);
         if (res.StatusCode != System.Net.HttpStatusCode.OK)
           throw new Exception(string.Format("Endpoint {0} at Buckets.GetBucketsAsync returned {1}", Internal.END_POINTS.GET_BUCKETS, res.StatusCode));
@@ -111,7 +111,7 @@ namespace Autodesk.Forge.OSS
     }
 
     /// <summary>
-    /// Create a new bucket with the specified parameters. 
+    /// Create a new bucket with the specified parameters. If it already exists, return the bucket details.
     /// Requires bucket:create scope
     /// </summary>
     /// <param name="bucketKey"></param>
@@ -128,17 +128,24 @@ namespace Autodesk.Forge.OSS
 
       IRestResponse res = await REST.MakeAuthorizedRequestAsync(Authorization, END_POINTS.POST_BUCKETS, Method.POST, headers, null, body);
 
-      if (res.StatusCode != System.Net.HttpStatusCode.OK || res.StatusCode!= System.Net.HttpStatusCode.Conflict)
+      if (res.StatusCode != System.Net.HttpStatusCode.OK && res.StatusCode != System.Net.HttpStatusCode.Conflict)
         throw new Exception(string.Format("Endpoint {0} at Buckets.CreateBucket returned {1}", Internal.END_POINTS.GET_BUCKETS, res.StatusCode));
 
-      BucketDetails newBucket = new BucketDetails(Authorization);
-      JsonConvert.PopulateObject(res.Content, newBucket);
+      BucketDetails newBucket;
+
+      if (res.StatusCode == System.Net.HttpStatusCode.OK)
+      {
+        newBucket =  new BucketDetails(Authorization);
+        JsonConvert.PopulateObject(res.Content, newBucket);
+      }
+      else // Conflict: bucket already exists, but we need to honor the expected return
+        newBucket = await BucketDetails.InitializeAsync(Authorization, bucketKey);
 
       return newBucket;
     }
   }
 
-  
+
   //public struct BucketKey
   //{
   //  public BucketKey(string bucketKey)
@@ -153,7 +160,7 @@ namespace Autodesk.Forge.OSS
   //    return Value;
   //  }
   //}
-  
+
 
   public class Bucket : Internal.ApiObject
   {
@@ -227,6 +234,7 @@ namespace Autodesk.Forge.OSS
     /// <returns></returns>
     public async Task<IEnumerable<Object>> GetObjectsAsync(int limit = 10, string startAt = "")
     {
+      _listOfObjects.Clear();
       while (limit > 0)
       {
         Dictionary<string, string> parameters = new Dictionary<string, string>();
@@ -251,17 +259,33 @@ namespace Autodesk.Forge.OSS
     }
 
     /// <summary>
-    /// Upload the provided filePath to the current bucket, creating a new object
+    /// Upload the provided filePath to the current bucket, creating a new object.
+    /// Requires data:write data:create scope
     /// </summary>
     /// <param name="filePath">File to upload</param>
     /// <returns>The new Object created</returns>
     public async Task<Object> UploadObjectAsync(string filePath)
     {
-      IRestResponse res =await REST.MakeAuthorizedRequestAsync(Authorization, string.Format(END_POINTS.PUT_BUCKET_OBJECT, BucketKey, Path.GetFileName(filePath)), Method.PUT, null, null, null, filePath);
+      IRestResponse res = await REST.MakeAuthorizedRequestAsync(Authorization, string.Format(END_POINTS.PUT_BUCKET_OBJECT, BucketKey, Path.GetFileName(filePath)), Method.PUT, null, null, null, filePath);
       if (res.StatusCode != System.Net.HttpStatusCode.OK)
-        throw new Exception(string.Format("Endpoint {0} at Buckets.GetObjectsAsync returned {1}", Internal.END_POINTS.PUT_BUCKET_OBJECT , res.StatusCode));
+        throw new Exception(string.Format("Endpoint {0} at Buckets.GetObjectsAsync returned {1}", Internal.END_POINTS.PUT_BUCKET_OBJECT, res.StatusCode));
 
-      return JsonConvert.DeserializeObject<Object>(res.Content);
+      Object newObject = JsonConvert.DeserializeObject<Object>(res.Content);
+      newObject.Authorization = Authorization;
+      return newObject;
+    }
+
+    /// <summary>
+    /// Return the sum of all objects size (in bytes) on the bucket. This method will refresh the list of objects on the bucket.
+    /// </summary>
+    /// <returns></returns>
+    public async Task<long> Size()
+    {
+      IEnumerable<Object> objects = await GetObjectsAsync(int.MaxValue);
+      long size = 0;
+      foreach (Object obj in objects)
+        size += obj.Size;
+      return size;
     }
   }
 

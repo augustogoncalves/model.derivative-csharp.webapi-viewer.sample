@@ -49,13 +49,25 @@ namespace Autodesk.Forge.ModelDerivative
       input.urn = urn;
     }
 
+    public PostJobModel(string urn, string rootFilename)
+    {
+      input = new ModelDerivative.PostJobModel.InputCompressed();
+      input.urn = urn;
+      ((InputCompressed)input).rootFilename = rootFilename;
+      
+    }
+
     public Input input;
 
     public class Input
     {
       public string urn;
-      //public bool compressedUrn;
-      //public string rootFilename;
+    }
+
+    public class InputCompressed : Input
+    {
+      public bool compressedUrn = true;
+      public string rootFilename;
     }
   }
 

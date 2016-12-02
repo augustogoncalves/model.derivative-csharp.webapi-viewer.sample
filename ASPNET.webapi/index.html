@@ -12,7 +12,7 @@
     <script src="Scripts/jsTree3/jstree.min.js"></script>
     <link href="Content/jsTree/themes/default/style.min.css" rel="stylesheet" />
     <link href="Content/bootstrap-select.min.css" rel="stylesheet" />
-    
+
     <!-- Autodesk Forge Viewer files -->
     <link rel="stylesheet" href="https://developer.api.autodesk.com/viewingservice/v1/viewers/style.min.css" type="text/css">
     <script language="JavaScript" src="https://developer.api.autodesk.com/viewingservice/v1/viewers/three.min.js"></script>
@@ -71,15 +71,15 @@
                     <h4 class="modal-title" id="myModalLabel">Create new bucket</h4>
                 </div>
                 <div class="modal-body">
-                        <div class="input-group">
-                            <select class="selectpicker" multiple title="Policy Key" id="newBucketPolicyKey">
-                                <option value="transient">Transient</option>
-                                <option value="temporary" disabled>Temporary</option> <!-- you can safely enable this  -->
-                                <option value="persistent" disabled>Persistent</option><!-- you can safely enable this  -->
-                            </select>
-                            <input type="text" id="newBucketKey" class="form-control">
-                        </div><!-- /input-group -->
-                    For demonstration purpouses, files are not automatically translated. After you upload, right click on the file and select "Translate".
+                    <div class="input-group">
+                        <select class="selectpicker" multiple title="Policy Key" id="newBucketPolicyKey">
+                            <option value="transient" selected>Transient</option>
+                            <option value="temporary" disabled>Temporary</option> <!-- you can safely enable this  -->
+                            <option value="persistent" disabled>Persistent</option><!-- you can safely enable this  -->
+                        </select>
+                        <input type="text" id="newBucketKey" class="form-control">
+                    </div><!-- /input-group -->
+                    For demonstration purpouses, objects (files) are not automatically translated. After you upload, right click on the object and select "Translate".
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
