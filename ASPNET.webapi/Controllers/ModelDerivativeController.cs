@@ -16,6 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using Autodesk.Forge;
 using Autodesk.Forge.ModelDerivative;
 using Autodesk.Forge.OAuth;
 using System.Net;
@@ -46,7 +47,7 @@ namespace WebAPISample.Controllers
     {
       Autodesk.Forge.OSS.Object obj = new Autodesk.Forge.OSS.Object(
         await GetOAuth(new Scope[] { Scope.DataRead, Scope.DataWrite, Scope.DataCreate }),
-        objModel.bucketKey, objModel.objectKey);
+        objModel.bucketKey, objModel.objectKey.Base64Decode());
 
       return await obj.Translate(new SVFOutput[] { SVFOutput.Views2d, SVFOutput.Views3d });
     }

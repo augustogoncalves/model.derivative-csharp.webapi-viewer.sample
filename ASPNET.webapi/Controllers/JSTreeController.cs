@@ -16,6 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+using Autodesk.Forge;
 using Autodesk.Forge.OAuth;
 using Autodesk.Forge.OSS;
 using System.Collections.Generic;
@@ -63,7 +64,7 @@ namespace WebAPISample.Controllers
         Bucket bucket = new Bucket(oauth,  id/*bucketKey*/);
         IEnumerable<Autodesk.Forge.OSS.Object> objects = await bucket.GetObjectsAsync(int.MaxValue);
         foreach (Autodesk.Forge.OSS.Object obj in objects)
-          nodes.Add(new TreeNode(obj.ObjectIdBase64, obj.ObjectKey, "object", false));
+          nodes.Add(new TreeNode(obj.ObjectId.Base64Encode(), obj.ObjectKey, "object", false));
       }
       return nodes;
     }

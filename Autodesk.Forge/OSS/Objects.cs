@@ -22,8 +22,10 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Threading.Tasks;
 
+// ToDo: need to improve this
 using BucketKey = System.String;
 using ObjectId = System.String;
+using Autodesk.Forge.OAuth;
 
 namespace Autodesk.Forge.OSS
 {
@@ -37,15 +39,15 @@ namespace Autodesk.Forge.OSS
     /// </summary>
     /// <param name="auth"></param>
     /// <param name="objectKey"></param>
-    public Object(OAuth.OAuth auth, BucketKey bucketKey, ObjectId objectId64) : base(auth)
+    public Object(OAuth.OAuth auth, BucketKey bucketKey, ObjectId objectId) : base(auth)
     {
       BucketKey = bucketKey;
-      ObjectIdBase64 = objectId64; 
+      ObjectId = objectId; 
     }
 
     public async Task<HttpStatusCode> Translate(SVFOutput[] svfOutput)
     {
-      PostSVFJobModel postJob = new ModelDerivative.PostSVFJobModel(ObjectIdBase64, new SVFOutput[] { SVFOutput.Views2d, SVFOutput.Views3d });
+      PostSVFJobModel postJob = new ModelDerivative.PostSVFJobModel(ObjectId.Base64Encode(), new SVFOutput[] { SVFOutput.Views2d, SVFOutput.Views3d });
       return await Job.PostJob(Authorization, postJob);
     }
 
@@ -66,22 +68,6 @@ namespace Autodesk.Forge.OSS
     /// </summary>
     [JsonProperty("objectId")]
     public string ObjectId { get; internal set; }
-
-    /// <summary>
-    /// Object URN Base 64 Encoded
-    /// </summary>
-    [JsonProperty("objectIdBase64")]
-    public string ObjectIdBase64
-    {
-      set
-      {
-        ObjectId = value.Base64Decode();
-      }
-      get
-      {
-        return ObjectId.Base64Encode();
-      }
-    }
 
     /// <summary>
     /// Checksum SHA1 integrity verifier

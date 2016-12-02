@@ -19,7 +19,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Autodesk.Forge.Internal
+namespace Autodesk.Forge
 {
   public static class Utils
   {
@@ -56,7 +56,7 @@ namespace Autodesk.Forge.Internal
       return System.Convert.ToBase64String(plainTextBytes);
     }
 
-    /// <summary>Y:\Github\AugustoGoncalves\model.derivative-csharp.webapi-viewer.sample\Autodesk.Forge\Internal\Utils.cs
+    /// <summary>
     /// Base64 dencode a string (source: http://stackoverflow.com/a/11743162)
     /// </summary>
     /// <param name="base64EncodedData"></param>

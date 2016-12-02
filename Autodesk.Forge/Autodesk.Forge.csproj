@@ -51,7 +51,7 @@
     <Compile Include="Internal\ApiObject.cs" />
     <Compile Include="Internal\EndPointsList.cs" />
     <Compile Include="Internal\REST.cs" />
-    <Compile Include="Internal\Utils.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="ModelDerivative\Job.cs" />
     <Compile Include="OAuth\OAuth.cs" />
     <Compile Include="OAuth\OAuth2LeggedToken.cs" />
