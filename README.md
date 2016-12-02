@@ -32,19 +32,22 @@ For using this sample, you need an Autodesk developer credentials. Visit the [Fo
 
 Open the **web.config** file and adjust the Forge Client ID & Secret.
 
+```xml
     <appSettings>
       <add key="FORGE_CLIENT_ID" value="" />
       <add key="FORGE_CLIENT_SECRET" value="" />
     </appSettings>
-
-Start the **ASPNET.webapi** project, the **index.html** is marked as start page. The **New Bucket** allow create new buckets (as of now, minimum input validation is implemented). For any bucket, right-click to upload a file (objects). For demonstration, objects are not automatically translated, but right-click on a object and select **Translate**. 
+```
 
 Compile the solution, Visual Studio should download the NUGET packages ([RestSharp](https://www.nuget.org/packages/RestSharp) and [Newtonsoft.Json](https://www.nuget.org/packages/newtonsoft.json/))
+
+Start the **ASPNET.webapi** project, the **index.html** is marked as start page. At the webpage, the **New Bucket** blue button allow create new buckets (as of now, minimum input validation is implemented). For any bucket, right-click to upload a file (objects). For demonstration, objects are not automatically translated, but right-click on a object and select **Translate**. 
 
 ## Run Test
 
 Open the **ForgeApp.runsettings** file and adjust the Forge client ID and secret.
 
+```xml
     <?xml version="1.0" encoding="utf-8"?>
     <RunSettings>
       <!-- Parameters used by tests at runtime -->
@@ -53,6 +56,7 @@ Open the **ForgeApp.runsettings** file and adjust the Forge client ID and secret
         <Parameter name="FORGE_CLIENT_SECRET" value="" />
       </TestRunParameters>
     </RunSettings>
+```
 
 The **BucketWorkflow** test will create a bucket (named "test[timestamp]"), upload the testing file (/TestFile/Analyze.dwf) and post a translation job.
 
@@ -60,6 +64,7 @@ The **BucketWorkflow** test will create a bucket (named "test[timestamp]"), uplo
 
 This solution includes a **Autodesk.Forge** class library that maps endpoints related to app buckets. 
 
+```cs
       // authenticate
       OAuth.OAuth oauth = await OAuth2LeggedToken.AuthenticateAsync(ForgeClientID, ForgeClientSecret,
         new Scope[] { Scope.BucketRead, Scope.BucketCreate, Scope.DataRead, Scope.DataCreate, Scope.DataWrite });
@@ -88,6 +93,7 @@ This solution includes a **Autodesk.Forge** class library that maps endpoints re
       // translate
       HttpStatusCode res = await newObject.Translate(new SVFOutput[] { SVFOutput.Views3d, SVFOutput.Views2d });
       // now this newObject is ready for Viewer
+```
 
 # License
 
