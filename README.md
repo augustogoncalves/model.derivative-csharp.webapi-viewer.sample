@@ -24,6 +24,8 @@ This basic C# WebAPI back-end sample implements a basic list of Buckets and Obje
 
 **3. Autodesk.Forge.Test**: Some testing methods.
 
+Try it live at [modelderivative.apphb.com](http://modelderivative.apphb.com/) (hosted by [AppHarbor](https://appharbor.com/)). **Important**: this sample is public, therefore any file uploaded will be visible to others. 
+
 # Setup
 
 For using this sample, you need an Autodesk developer credentials. Visit the [Forge Developer Portal](https://developer.autodesk.com), sign up for an account, then [create an app](https://developer.autodesk.com/myapps/create) that uses Data Management and Model Derivative APIs. For this new app, use **http://localhost:3000/api/forge/callback/oauth** as Callback URL, although is not used on 2-legged flow. Finally take note of the **Client ID** and **Client Secret**.
