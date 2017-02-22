@@ -1,3 +1,11 @@
+# This sample is deprecated
+
+Check the new version at [Autodesk Forge](https://github.com/Autodesk-Forge/model.derivative-WebAPI-sample)
+
+**************************
+**************************
+**************************
+
 # model.derivative-csharp.webapi-viewer.sample
 
 ![Platforms](https://img.shields.io/badge/platform-Windows-lightgray.svg)
